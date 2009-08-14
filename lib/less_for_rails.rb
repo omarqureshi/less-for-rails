@@ -9,13 +9,17 @@ module LessForRails
 
 }
   extend self
-  
+
+  def paths
+    @paths ||= ["#{Rails.root}/public/stylesheets"]
+  end
+
   # Converts all public/stylesheets/*.less to public/stylesheets/*.css.
   #
   # Options:
   #  compress - Remove all newlines? `true` or `false`.
   def run(options = {})
-    Dir["#{Rails.root}/public/stylesheets/*.less"] }.each do |source|
+    paths.map {|path| Dir["#{path}/*.less"]}.flatten.each do |source|
       destination_file = File.basename(source, File.extname(source))
       destination_directory = "#{Rails.root}/public/stylesheets"
       destination = "#{destination_directory}/#{destination_file}.css"
