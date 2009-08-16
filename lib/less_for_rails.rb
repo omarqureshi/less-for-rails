@@ -27,7 +27,7 @@ module LessForRails
       if !File.exists?(destination) || File.stat(source).mtime > File.stat(destination).mtime
         engine = Less::Engine.new(File.read(source))
         css = Less.version > "1.0" ? engine.to_css : engine.to_css(:desc)
-        css = css.delete("\n") if options[:compress]
+        css.delete!("\n") if options[:compress]
 
         FileUtils.mkdir_p(destination_directory)
         File.open(destination_path, "w") {|file|
