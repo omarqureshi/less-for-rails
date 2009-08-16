@@ -8,30 +8,33 @@ module LessForRails
 */
 
 }
+  STYLESHEETS_PATH = "#{Rails.root}/public/stylesheets"
+  FileUtils.mkdir_p(STYLESHEETS_PATH)
+
   extend self
 
+  # Add aditional paths where the plugin should be looking for .less files
+  # with `LessForRails.paths << "my/path/here"`.
   def paths
-    @paths ||= ["#{Rails.root}/public/stylesheets"]
+    @paths ||= [STYLESHEETS_PATH]
   end
 
-  # Converts all public/stylesheets/*.less to public/stylesheets/*.css.
+  # Converts all *.less files in +paths+ to STYLESHEETS_PATH/[filename].css.
   #
   # Options:
   #  compress - Remove all newlines? `true` or `false`.
   def run(options = {})
-    paths.map {|path| Dir["#{path}/*.less"]}.flatten.each do |source|
-      destination_file = File.basename(source, File.extname(source))
-      destination_directory = "#{Rails.root}/public/stylesheets"
-      destination = "#{destination_directory}/#{destination_file}.css"
+    paths.map {|path| Dir["#{path}/*.less"]}.flatten.each {|less_source|
+      destination_filename = "#{File.basename(less_source, File.extname(less_source))}.css"
+      destination = "#{STYLESHEETS_PATH}/#{destination_filename}"
       
-      if !File.exists?(destination) || File.stat(source).mtime > File.stat(destination).mtime
-        engine = Less::Engine.new(File.read(source))
+      if !File.exists?(destination) || File.stat(less_source).mtime > File.stat(destination).mtime
+        engine = Less::Engine.new(File.read(less_source))
         css = Less.version > "1.0" ? engine.to_css : engine.to_css(:desc)
         css.delete!("\n") if options[:compress]
-
-        FileUtils.mkdir_p(destination_directory)
-        File.open(destination_path, "w") {|file|
-          file.write HEADER % [destination_file] if Rails.env == "development"
+      
+        File.open(destination, "w") {|file|
+          file.write HEADER % [destination_filename] if Rails.env == "development"
           file.write css
         }
       end
