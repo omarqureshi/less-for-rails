@@ -44,6 +44,17 @@ A plug-and-play hook for the fabulous Less CSS syntax, http://lesscss.org/.
           
           
           
+          -- Using it in hazardous environments --
+          
+          Some hosts, such as Heroku, doesn't allow the creation of static
+          files. This plugin creates static files. Crash!
+          
+          There's another edition of this plugin that uses cache control
+          headers through controllers, which works out of the box on
+          Heroku.
+          
+          http://github.com/augustl/less_for_rails_with_cache_control/tree
+          
           
           
   
